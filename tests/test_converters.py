@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from converters import AssemblyAccessionConverter, SequenceAccessionConverter
+from contig_name_converter.converters import AssemblyAccessionConverter, SequenceAccessionConverter
 
 
 class TestSequenceAccessionConverter(TestCase):

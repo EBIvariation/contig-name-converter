@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 
 from pysam import VariantFile, VariantHeader
 from ebi_eva_common_pyutils.logger import logging_config
-from converters import SequenceAccessionConverter
+from contig_name_converter.converters import SequenceAccessionConverter
 
 logger = logging_config.get_logger(__name__)
 

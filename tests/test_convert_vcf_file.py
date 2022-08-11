@@ -2,7 +2,7 @@ import os
 from unittest import TestCase
 from unittest.mock import patch
 
-from convert_vcf_file import convert_vcf
+from contig_name_converter.convert_vcf_file import convert_vcf
 
 
 class TestVCFConverter(TestCase):

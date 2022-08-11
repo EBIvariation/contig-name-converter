@@ -11,6 +11,7 @@ setup(
     name='contig_name_converter',
     packages=['contig_name_converter'],
     package_data={'contig_name_converter': ['VERSION']},
+    scripts=['bin/convert_vcf_file.py'],
     version=version,
     license='Apache',
     description='EBI EVA - VCF merge library',

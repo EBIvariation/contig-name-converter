@@ -1,3 +1,4 @@
 pysam
 requests
 retry
+ebi-eva-common-pyutils

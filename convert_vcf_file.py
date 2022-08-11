@@ -1,9 +1,11 @@
+import os
 from argparse import ArgumentParser
 
 from pysam import VariantFile, VariantHeader
-
+from ebi_eva_common_pyutils.logger import logging_config
 from converters import SequenceAccessionConverter
 
+logger = logging_config.get_logger(__name__)
 
 def strip_quotes(string):
     return string.strip('"')
@@ -11,6 +13,7 @@ def strip_quotes(string):
 
 def convert_vcf(input, output, target_naming_convention):
     input_file = VariantFile(input)
+    no_change = True
     converter = SequenceAccessionConverter(target_naming_convention)
 
     contig_name_to_accession = {}
@@ -25,7 +28,19 @@ def convert_vcf(input, output, target_naming_convention):
             accession = strip_quotes(header_rec['accession'])
             contig_name_to_accession[header_rec['ID']] = accession
             all_other_kwargs = dict((k, strip_quotes(v)) for k, v in header_rec.items() if k not in ('ID', 'IDX'))
+            new_id = converter.convert(accession)
+            if new_id != header_rec['ID']:
+                no_change = False
             output_header.contigs.add(id=converter.convert(accession), **all_other_kwargs)
+
+    if no_change:
+        logger.warning(f'There are no difference between the input file naming convention and '
+                       f'{target_naming_convention}. Will create a symbolic link instead.')
+        if os.path.exists(output):
+            os.remove(output)
+        os.symlink(input, output)
+        return
+
     output_file = VariantFile(output, 'w', header=output_header)
 
     for rec in input_file:
@@ -43,6 +58,7 @@ def main():
                           default='enaSequenceName')
 
     args = argparse.parse_args()
+    logging_config.add_stdout_handler()
 
     convert_vcf(args.input, args.output, target_naming_convention=args.convention)
 

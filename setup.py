@@ -14,7 +14,7 @@ setup(
     scripts=['bin/convert_vcf_file.py'],
     version=version,
     license='Apache',
-    description='EBI EVA - VCF merge library',
+    description='Tools to change the naming convention of common genomics file format.',
     url='https://github.com/EBIvariation/contig_name_converter',
     keywords=['ebi', 'eva', 'python', 'vcf'],
     install_requires=requirements,

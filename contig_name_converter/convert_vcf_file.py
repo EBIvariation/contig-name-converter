@@ -23,7 +23,6 @@ def convert_vcf(input, output, target_naming_convention):
     for header_rec in input_file.header.records:
         if header_rec.type != 'CONTIG':
             output_header.add_record(header_rec)
-            pass
         else:
             accession = strip_quotes(header_rec['accession'])
             contig_name_to_accession[header_rec['ID']] = accession

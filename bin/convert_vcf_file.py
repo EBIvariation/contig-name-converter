@@ -10,11 +10,12 @@ logger = logging_config.get_logger(__name__)
 
 
 def main():
-    argparse = ArgumentParser(description="Convert sequence/contig names from one convention to another.")
+    argparse = ArgumentParser(description="Convert sequence/contig names from a naming convention to another using "
+                                          "stored in the accession provided in the header .")
     argparse.add_argument('-i', '--input', help='Input file to convert')
     argparse.add_argument('-o', '--output', help='Output file containing convert the converted data')
     argparse.add_argument('-c', '--convention', help='Contig naming convention use the.',
-                          choices=['enaSequenceName', 'genbank', 'genbankSequenceName', 'refseq', 'ucscName'],
+                          choices=['insdc', 'refseq', 'enaSequenceName', 'genbankSequenceName', 'ucscName'],
                           default='enaSequenceName')
 
     args = argparse.parse_args()

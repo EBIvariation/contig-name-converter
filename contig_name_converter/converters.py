@@ -11,7 +11,7 @@ class SequenceAccessionConverter:
         self.target_naming_convention = target_naming_convention
         self._cache = {}
 
-    @retry(tries=3)
+    @retry(tries=3, delay=2, backoff=1.2, jitter=(1, 3))
     def _retrieve_from_contig_alias(self, contig_name):
         url = self.contig_alias_url + 'v1/chromosomes/genbank/' + contig_name
         response = requests.get(url, headers={'accept': 'application/json'})
@@ -35,7 +35,7 @@ class AssemblyAccessionConverter(SequenceAccessionConverter):
         self.source_naming_convention = source_naming_convention
         self._cache_assembly_dict()
 
-    @retry(tries=3)
+    @retry(tries=3, delay=2, backoff=1.2, jitter=(1, 3))
     def _assembly_get(self, page=0, size=10):
         url = self.contig_alias_url + 'v1/assemblies/' + self.source_assembly + f'/chromosomes?page={page}&size={size}'
         print(url)

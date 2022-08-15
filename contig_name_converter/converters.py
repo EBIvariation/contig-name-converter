@@ -5,10 +5,14 @@ from retry import retry
 class SequenceAccessionConverter:
     """Converter that needs to receive the INSDC contig accession that can uniquely identify the sequence to
     translate the contig name"""
-    contig_alias_url = 'https://wwwdev.ebi.ac.uk/eva/webservices/contig-alias/'
+    _contig_alias_url = 'https://www.ebi.ac.uk/eva/webservices/contig-alias/'
 
-    def __init__(self, target_naming_convention):
+    def __init__(self, target_naming_convention, contig_alias_url=None):
         self.target_naming_convention = target_naming_convention
+        if contig_alias_url:
+            self.contig_alias_url = contig_alias_url
+        else:
+            self.contig_alias_url = self._contig_alias_url
         self._cache = {}
 
     @retry(tries=3, delay=2, backoff=1.2, jitter=(1, 3))
@@ -29,8 +33,8 @@ class SequenceAccessionConverter:
 class AssemblyAccessionConverter(SequenceAccessionConverter):
     """Converter that needs to receive the INSDC assembly id and can translate from any convention to any convention
     within that assembly"""
-    def __init__(self, source_assembly, source_naming_convention, target_naming_convention):
-        super().__init__(target_naming_convention)
+    def __init__(self, source_assembly, source_naming_convention, target_naming_convention, contig_alias_url=None):
+        super().__init__(target_naming_convention, contig_alias_url)
         self.source_assembly = source_assembly
         self.source_naming_convention = source_naming_convention
         self._cache_assembly_dict()
@@ -38,7 +42,6 @@ class AssemblyAccessionConverter(SequenceAccessionConverter):
     @retry(tries=3, delay=2, backoff=1.2, jitter=(1, 3))
     def _assembly_get(self, page=0, size=10):
         url = self.contig_alias_url + 'v1/assemblies/' + self.source_assembly + f'/chromosomes?page={page}&size={size}'
-        print(url)
         response = requests.get(url, headers={'accept': 'application/json'})
         response.raise_for_status()
         response_data = response.json()

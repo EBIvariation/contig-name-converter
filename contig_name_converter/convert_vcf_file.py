@@ -11,10 +11,10 @@ def strip_quotes(string):
     return string.strip('"')
 
 
-def convert_vcf(input, output, target_naming_convention):
+def convert_vcf(input, output, target_naming_convention, contig_alias_url=None):
     input_file = VariantFile(input)
     no_change = True
-    converter = SequenceAccessionConverter(target_naming_convention)
+    converter = SequenceAccessionConverter(target_naming_convention, contig_alias_url=contig_alias_url)
 
     contig_name_to_accession = {}
     # Get a new empty header
@@ -46,21 +46,3 @@ def convert_vcf(input, output, target_naming_convention):
         # translate convert the chrom to the new sequence dictionary
         rec.translate(output_header)
         output_file.write(rec)
-
-
-def main():
-    argparse = ArgumentParser(description="Convert sequence/contig names from one convention to another.")
-    argparse.add_argument('-i', '--input', help='Input file to convert')
-    argparse.add_argument('-o', '--output', help='Output file containing convert the converted data')
-    argparse.add_argument('-c', '--convention', help='Contig naming convention use the.',
-                          choices=['enaSequenceName', 'genbank', 'genbankSequenceName', 'refseq', 'ucscName'],
-                          default='enaSequenceName')
-
-    args = argparse.parse_args()
-    logging_config.add_stdout_handler()
-
-    convert_vcf(args.input, args.output, target_naming_convention=args.convention)
-
-
-if __name__ == "__main__":
-    main()

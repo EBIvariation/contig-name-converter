@@ -12,7 +12,7 @@ class SequenceAccessionConverter:
 
     def __init__(self, target_naming_convention, contig_alias_url=None):
         assert target_naming_convention in supported_conventions, \
-            f'The target naming convention {target_naming_convention} is not on of the supported ones ' \
+            f'The target naming convention {target_naming_convention} is not one of the supported ones ' \
             f'{", ".join(sorted(supported_conventions))}'
         self.target_naming_convention = target_naming_convention
         if contig_alias_url:
@@ -42,7 +42,7 @@ class AssemblyAccessionConverter(SequenceAccessionConverter):
     def __init__(self, source_assembly, source_naming_convention, target_naming_convention, contig_alias_url=None):
         super().__init__(target_naming_convention, contig_alias_url)
         assert target_naming_convention in supported_conventions, \
-            f'The source naming convention {source_naming_convention} is not on of the supported ones ' \
+            f'The source naming convention {source_naming_convention} is not one of the supported ones ' \
             f'{", ".join(sorted(supported_conventions))}'
         self.source_assembly = source_assembly
         self.source_naming_convention = source_naming_convention

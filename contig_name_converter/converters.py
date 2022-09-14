@@ -2,12 +2,18 @@ import requests
 from retry import retry
 
 
+supported_conventions = {'insdc', 'refseq', 'enaSequenceName', 'genbankSequenceName', 'ucscName'}
+
+
 class SequenceAccessionConverter:
     """Converter that needs to receive the INSDC contig accession that can uniquely identify the sequence to
     translate the contig name"""
     _contig_alias_url = 'https://www.ebi.ac.uk/eva/webservices/contig-alias/'
 
     def __init__(self, target_naming_convention, contig_alias_url=None):
+        assert target_naming_convention in supported_conventions, \
+            f'The target naming convention {target_naming_convention} is not on of the supported ones ' \
+            f'{", ".join(sorted(supported_conventions))}'
         self.target_naming_convention = target_naming_convention
         if contig_alias_url:
             self.contig_alias_url = contig_alias_url
@@ -35,6 +41,9 @@ class AssemblyAccessionConverter(SequenceAccessionConverter):
     within that assembly"""
     def __init__(self, source_assembly, source_naming_convention, target_naming_convention, contig_alias_url=None):
         super().__init__(target_naming_convention, contig_alias_url)
+        assert target_naming_convention in supported_conventions, \
+            f'The source naming convention {source_naming_convention} is not on of the supported ones ' \
+            f'{", ".join(sorted(supported_conventions))}'
         self.source_assembly = source_assembly
         self.source_naming_convention = source_naming_convention
         self._cache_assembly_dict()
@@ -44,26 +53,22 @@ class AssemblyAccessionConverter(SequenceAccessionConverter):
         url = self.contig_alias_url + 'v1/assemblies/' + self.source_assembly + f'/chromosomes?page={page}&size={size}'
         response = requests.get(url, headers={'accept': 'application/json'})
         response.raise_for_status()
-        response_data = response.json()
-        return response_data['_embedded']
+        response_json = response.json()
+        return response_json
+
+    def _add_chromosomes(self, assembly_data):
+        for entity in assembly_data.get('chromosomeEntities', []):
+            self._cache[entity[self.source_naming_convention]] = entity[self.target_naming_convention]
 
     def _cache_assembly_dict(self):
         page = 0
         size = 1000
-        assembly_data = self._assembly_get(page=page, size=size)
-        previous_size = -1
-        while assembly_data and ('chromosomeEntities' in assembly_data or 'scaffoldEntities' in assembly_data):
-            if len(self._cache) == previous_size:
-                break
-            previous_size = len(self._cache)
-            if 'chromosomeEntities' in assembly_data:
-                for entity in assembly_data['chromosomeEntities']:
-                    self._cache[entity[self.source_naming_convention]] = entity[self.target_naming_convention]
-            if 'scaffoldEntities' in assembly_data:
-                for entity in assembly_data['scaffoldEntities']:
-                    self._cache[entity[self.source_naming_convention]] = entity[self.target_naming_convention]
+        response_json = self._assembly_get(page=page, size=size)
+        self._add_chromosomes(response_json[['_embedded']])
+        while 'next' in response_json['_links']:
             page += 1
-            assembly_data = self._assembly_get(page=page, size=size)
+            response_json = self._assembly_get(page=page, size=size)
+            self._add_chromosomes(response_json[['_embedded']])
 
     def convert(self, contig_name):
         return self._cache.get(contig_name)

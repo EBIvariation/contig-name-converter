@@ -39,7 +39,7 @@ class TestVCFConverter(TestCase):
         input_file = os.path.join(os.path.dirname(__file__), 'resources/test.vcf')
         target_naming_convention = 'genbankSequenceName'
         output_file = 'test_output.vcf'
-        with patch('convert_vcf_file.logger.warning') as mock_warn:
+        with patch('contig_name_converter.convert_vcf_file.logger.warning') as mock_warn:
             convert_vcf(input_file, output_file, target_naming_convention)
         assert os.path.exists(output_file)
         assert os.path.islink(output_file)

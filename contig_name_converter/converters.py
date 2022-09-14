@@ -64,11 +64,11 @@ class AssemblyAccessionConverter(SequenceAccessionConverter):
         page = 0
         size = 1000
         response_json = self._assembly_get(page=page, size=size)
-        self._add_chromosomes(response_json[['_embedded']])
+        self._add_chromosomes(response_json['_embedded'])
         while 'next' in response_json['_links']:
             page += 1
             response_json = self._assembly_get(page=page, size=size)
-            self._add_chromosomes(response_json[['_embedded']])
+            self._add_chromosomes(response_json['_embedded'])
 
     def convert(self, contig_name):
         return self._cache.get(contig_name)

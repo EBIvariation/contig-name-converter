@@ -1,5 +1,4 @@
 import os
-from argparse import ArgumentParser
 
 from pysam import VariantFile, VariantHeader
 from ebi_eva_common_pyutils.logger import logging_config

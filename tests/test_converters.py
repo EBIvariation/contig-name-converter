@@ -11,6 +11,10 @@ class TestSequenceAccessionConverter(TestCase):
     def test_convert(self):
         assert self.converter.convert('CM025139.1') == 'Y'
 
+    def test_convert_not_found(self):
+        with self.assertRaises(ValueError):
+            self.converter.convert('chrA1')
+
 
 class TestAssemblyAccessionConverter(TestCase):
 

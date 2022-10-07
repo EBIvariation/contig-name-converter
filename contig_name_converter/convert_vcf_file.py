@@ -6,6 +6,7 @@ from contig_name_converter.converters import SequenceAccessionConverter
 
 logger = logging_config.get_logger(__name__)
 
+
 def strip_quotes(string):
     return string.strip('"')
 

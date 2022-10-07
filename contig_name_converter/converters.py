@@ -21,7 +21,7 @@ class SequenceAccessionConverter:
             self.contig_alias_url = self._contig_alias_url
         self._cache = {}
 
-    @retry(tries=3, delay=2, backoff=1.2, jitter=(1, 3))
+    @retry(exceptions=(ConnectionError, requests.RequestException), tries=3, delay=2, backoff=1.2, jitter=(1, 3))
     def _retrieve_from_contig_alias(self, contig_name):
         url = self.contig_alias_url + 'v1/chromosomes/genbank/' + contig_name
         response = requests.get(url, headers={'accept': 'application/json'})

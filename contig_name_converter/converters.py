@@ -1,6 +1,8 @@
+from ebi_eva_common_pyutils.logger import logging_config
 import requests
 from retry import retry
 
+logger = logging_config.get_logger(__name__)
 
 supported_conventions = {'insdc', 'refseq', 'enaSequenceName', 'genbankSequenceName', 'ucscName'}
 
@@ -28,7 +30,8 @@ class SequenceAccessionConverter:
         response.raise_for_status()
         json_resp = response.json()
         if not json_resp or '_embedded' not in json_resp:
-            raise ValueError('Could not find INSDC contig ' + contig_name)
+            logger.warn(f'Could not find INSDC contig {contig_name}, will not replace')
+            return contig_name
         chromosome_entities = json_resp.get('_embedded').get('chromosomeEntities')
         assert len(chromosome_entities) == 1, 'Multiple option found for ' + contig_name
         return chromosome_entities[0].get(self.target_naming_convention)

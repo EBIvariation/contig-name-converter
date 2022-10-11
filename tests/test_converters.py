@@ -11,6 +11,9 @@ class TestSequenceAccessionConverter(TestCase):
     def test_convert(self):
         assert self.converter.convert('CM025139.1') == 'Y'
 
+    def test_convert_not_found(self):
+        assert self.converter.convert('U20753.1') == 'U20753.1'
+
 
 class TestAssemblyAccessionConverter(TestCase):
 

@@ -1,6 +1,8 @@
+from ebi_eva_common_pyutils.logger import logging_config
 import requests
 from retry import retry
 
+logger = logging_config.get_logger(__name__)
 
 supported_conventions = {'insdc', 'refseq', 'enaSequenceName', 'genbankSequenceName', 'ucscName'}
 
@@ -21,12 +23,16 @@ class SequenceAccessionConverter:
             self.contig_alias_url = self._contig_alias_url
         self._cache = {}
 
-    @retry(tries=3, delay=2, backoff=1.2, jitter=(1, 3))
+    @retry(exceptions=(ConnectionError, requests.RequestException), tries=3, delay=2, backoff=1.2, jitter=(1, 3))
     def _retrieve_from_contig_alias(self, contig_name):
         url = self.contig_alias_url + 'v1/chromosomes/genbank/' + contig_name
         response = requests.get(url, headers={'accept': 'application/json'})
         response.raise_for_status()
-        chromosome_entities = response.json().get('_embedded').get('chromosomeEntities')
+        json_resp = response.json()
+        if not json_resp or '_embedded' not in json_resp:
+            logger.warn(f'Could not find INSDC contig {contig_name}, will not replace')
+            return contig_name
+        chromosome_entities = json_resp.get('_embedded').get('chromosomeEntities')
         assert len(chromosome_entities) == 1, 'Multiple option found for ' + contig_name
         return chromosome_entities[0].get(self.target_naming_convention)
 

@@ -33,8 +33,15 @@ class SequenceAccessionConverter:
             logger.warn(f'Could not find INSDC contig {contig_name}, will not replace')
             return contig_name
         chromosome_entities = json_resp.get('_embedded').get('chromosomeEntities')
-        assert len(chromosome_entities) == 1, 'Multiple option found for ' + contig_name
-        return chromosome_entities[0].get(self.target_naming_convention)
+        converted_names = set(ce.get(self.target_naming_convention) for ce in chromosome_entities)
+        if len(converted_names) != 1:
+            logger.warn(f'{contig_name} has multiple {self.target_naming_convention} in different assemblies: {converted_names}, will not replace')
+            return contig_name
+        converted_name = converted_names.pop()
+        if not converted_name:
+            logger.warn(f'{contig_name} does not have a {self.target_naming_convention} equivalent, will not replace')
+            return contig_name
+        return converted_name
 
     def convert(self, contig_accession):
         if contig_accession not in self._cache:

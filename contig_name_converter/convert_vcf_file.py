@@ -24,13 +24,19 @@ def convert_vcf(input, output, target_naming_convention, contig_alias_url=None):
         if header_rec.type != 'CONTIG':
             output_header.add_record(header_rec)
         else:
-            accession = strip_quotes(header_rec['accession'])
+            all_other_kwargs = {}
+            if 'accession' not in header_rec:
+                # Assume that the ID is the accession
+                accession = header_rec['ID']
+                all_other_kwargs['accession'] = accession
+            else:
+                accession = strip_quotes(header_rec['accession'])
             contig_name_to_accession[header_rec['ID']] = accession
-            all_other_kwargs = dict((k, strip_quotes(v)) for k, v in header_rec.items() if k not in ('ID', 'IDX'))
+            all_other_kwargs.update(dict((k, strip_quotes(v)) for k, v in header_rec.items() if k not in ('ID', 'IDX')))
             new_id = converter.convert(accession)
             if new_id != header_rec['ID']:
                 no_change = False
-            output_header.contigs.add(id=converter.convert(accession), **all_other_kwargs)
+            output_header.contigs.add(id=new_id, **all_other_kwargs)
 
     if no_change:
         logger.warning(f'There are no difference between the input file naming convention and '

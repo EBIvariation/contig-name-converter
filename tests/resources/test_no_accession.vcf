@@ -1,0 +1,12 @@
+##fileformat=VCFv4.3
+##INFO=<ID=ALMM,Number=0,Type=Flag,Description="Alleles mismatch flag, present when some of the submitted variants have inconsistent allele information. See https://github.com/EBIvariation/eva-accession/wiki/Import-accessions-from-dbSNP#alleles-match">
+##INFO=<ID=VC,Number=1,Type=String,Description="Variant class according to the Sequence Ontology">
+##contig=<ID=CM025100.1>
+##contig=<ID=CM025139.1>
+##reference=<ID=ROS_Cfam_1.0,accession=GCA_014441545.1,URL=https://www.ebi.ac.uk/ena/browser/view/GCA_014441545.1>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+CM025100.1	5434	rs851737687	C	T	.	.	VC=SO:0001483
+CM025100.1	5479	rs852594303	G	A	.	.	VC=SO:0001483
+CM025100.1	31495	rs8632615	G	A	.	.	VC=SO:0001483
+CM025139.1	1581616	rs853051242	A	G	.	.	VC=SO:0001483
+CM025139.1	1683787	rs8955252	T	TT	.	.	VC=SO:0000667

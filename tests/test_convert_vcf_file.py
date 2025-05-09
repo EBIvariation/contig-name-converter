@@ -27,6 +27,14 @@ class TestVCFConverter(TestCase):
         assert os.path.exists(output_file)
         assert self.last_line(output_file).split('\t')[0] == 'Y'
 
+    def test_convert_to_ena_no_accession(self):
+        input_file = os.path.join(os.path.dirname(__file__), 'resources/test_no_accession.vcf')
+        target_naming_convention = 'enaSequenceName'
+        output_file = 'test_output.vcf'
+        convert_vcf(input_file, output_file, target_naming_convention)
+        assert os.path.exists(output_file)
+        assert self.last_line(output_file).split('\t')[0] == 'Y'
+
     def test_convert_to_refseq(self):
         input_file = os.path.join(os.path.dirname(__file__), 'resources/test.vcf')
         target_naming_convention = 'refseq'
